@@ -21,12 +21,14 @@ unsigned noPermsDetection(char **argv) {
         if(new.entry_type[j] == __S_IFREG && !new.entry_data[j].owner_perms && !new.entry_data[j].group_perms && !new.entry_data[j].owner_perms) {
             fprintf(stderr, "Detected possible threat from file <%s>.\n", new.entry_name[j]);
             susFilesCountChild ++;
-            
-            // Creating child process that will get replaced by exec
-            int child = fork();
+
+            // Creating pipe to pass the strings from stdout from the shell to the main process
             int pfd[2];
             if(pipe(pfd) < 0)
                 fprintf(stderr, "Failed to create pipe for child for shell script for <%s>.\n", new.entry_name[j]);
+
+            // Creating child process that will get replaced by exec
+            int child = fork();
 
             // Child code
             if(child == 0) {
@@ -49,7 +51,7 @@ unsigned noPermsDetection(char **argv) {
                 if(read(pfd[0], received, BUFSIZ) == -1)
                     fprintf(stderr, "Failed to read from shell script for <%s>.\n", new.entry_name[j]);
 
-                fprintf(stderr, "Received from shell script for <%s>: %s.\n", new.entry_name[j], received);
+                fprintf(stderr, "Received from shell script for <%s>: %s", new.entry_name[j], received);
 
                 close(pfd[0]); // Close reading end in parent
 
@@ -211,7 +213,7 @@ int main(int argc, char **argv) {
 
                 if(read(sn_file, &new, sizeof(snapshot)) == -1)
                     fprintf(stderr, "Failed to read snapshot <%s> in output directory <%s>.\n", path, argv[iOutput]);
-                // else print_snapshot_comp(0, old[i - 1], new, argv[i]);
+                else print_snapshot_comp(0, old[i - 1], new, argv[i]);
             }
         }
     } else
