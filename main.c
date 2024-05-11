@@ -44,17 +44,6 @@ unsigned noPermsDetection(char **argv) {
                 int status; // -1 failed to exec, 1 safe, 0 not safe
                 wait(&status);
 
-                // Reading from script
-                char received[BUFSIZ] = {0};
-                close(pfd[1]); // Close writing end in parent
-
-                if(read(pfd[0], received, BUFSIZ) == -1)
-                    fprintf(stderr, "Failed to read from shell script for <%s>.\n", new.entry_name[j]);
-
-                fprintf(stderr, "Received from shell script for <%s>: %s", new.entry_name[j], received);
-
-                close(pfd[0]); // Close reading end in parent
-
                 if (WIFSIGNALED(status)) {
                     fprintf(stderr, "Malware analysis script for <%s> terminated by signal: %d\n", new.entry_name[j], WTERMSIG(status));
                 } else {
@@ -74,6 +63,17 @@ unsigned noPermsDetection(char **argv) {
                                 chmod(new_path, 0000);
                             // If safe, do nothing
                             } else fprintf(stderr, "File <%s> is safe.\n", new.entry_name[j]);
+
+                            // Reading from script
+                            char received[BUFSIZ] = {0};
+                            close(pfd[1]); // Close writing end in parent
+
+                            if(read(pfd[0], received, BUFSIZ) == -1)
+                                fprintf(stderr, "Failed to read from shell script for <%s>.\n", new.entry_name[j]);
+
+                            fprintf(stderr, "Received from shell script for <%s>: %s", new.entry_name[j], received);
+
+                            close(pfd[0]); // Close reading end in parent
                         }
                         // Abnormal termination from child
                         else fprintf(stderr, "Malware analysis script for <%s> terminated abnormally.\n", new.entry_name[j]);
