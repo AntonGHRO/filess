@@ -28,6 +28,8 @@ unsigned noPermsDetection(char **argv) {
             if(pipe(pfd) < 0)
                 fprintf(stderr, "Failed to create pipe for child for shell script for <%s>.\n", new.entry_name[j]);
 
+            // BUG - PIPE
+            
             // Child code
             if(child == 0) {
                 close(pfd[0]); // Close reading end in child
@@ -211,7 +213,7 @@ int main(int argc, char **argv) {
 
                 if(read(sn_file, &new, sizeof(snapshot)) == -1)
                     fprintf(stderr, "Failed to read snapshot <%s> in output directory <%s>.\n", path, argv[iOutput]);
-                // else print_snapshot_comp(0, old[i - 1], new, argv[i]);
+                else print_snapshot_comp(0, old[i - 1], new, argv[i]);
             }
         }
     } else
