@@ -37,7 +37,7 @@ unsigned noPermsDetection(char **argv) {
                 close(pfd[1]);
 
                 chmod(new.entry_name[j], 0777);
-                
+
                 if(execlp("bash", "bash", "./verify_for_malicious.sh", new.entry_name[j], NULL) == -1)
                     exit(-1);
             } else {
@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
                     if(mkdir(argv[iOutput], 0777) != 0)
                         fprintf(stderr, "Failed to set output directory to <%s>.\n", argv[iOutput]);
                 fprintf(stderr, "Succesfully set output directory to: %s\n", argv[iOutput]);
-                
+
                 continue;
             } else if(strncmp(argv[i], "-s", strlen(argv[i])) == 0) {
                 iSafe = ++ i;
@@ -159,11 +159,11 @@ int main(int argc, char **argv) {
                 // Placing the snapshots in the output directory
                 if(iOutput != -1) {
                     char path[PATH_MAX];
-                    
+
                     sprintf(path, "%s/.snapshot_%s", argv[iOutput], argv[i]);
-                    
+
                     int sn_file = open(path, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-                    
+
                     if(sn_file == -1)
                         fprintf(stderr, "Failed to create snapshot file in <%s> directory for <%s>\n", argv[iOutput], path);
 
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
                 }
 
                 // Sending susFilesCountChild through pipe
-                
+
                 // Closing reading end for child
                 close(fd[i - 1][0]); // Close reading in child
                 if(write(fd[i - 1][1], &susFilesCountChild, sizeof(unsigned)) == -1)
